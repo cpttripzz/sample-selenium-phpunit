@@ -44,7 +44,7 @@ class CssTests extends PHPUnit_Framework_TestCase
             'css_selector' => '.link-type-btn.small',
             'attributes' => [
                 'width' => '113px',
-                'height' => '40px',
+                'height' => '30px',
                 'font-size' => '18px'
             ]
         ],
@@ -77,7 +77,6 @@ class CssTests extends PHPUnit_Framework_TestCase
         $this->webDriver->close();
     }
 
-    protected $url = 'http://www.top10antivirussoftware.co.uk';
 
     public function testCssAttributes()
     {
@@ -91,17 +90,25 @@ class CssTests extends PHPUnit_Framework_TestCase
 
                 // checking that page title contains word 'GitHub'
                 $element = $this->elementsToTest[$componentName];
-                $selector = $element['css_selector'];
 
                 try {
+                    foreach(['',':hover'] as $hoverState) {
+                        $selector = $element['css_selector'];
+                        $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                        if($hoverState){
 
-                $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                            $this->webDriver->getMouse()->mouseMove( $htmlElement->getCoordinates() );
+                        }
+                        $cssValue = $cssExpectedValue = '';
+                        foreach ($element['attributes'] as $attributeType => $attributeValue) {
 
-                foreach ($element['attributes'] as $attributeType => $attributeValue) {
-                    $this->assertEquals($htmlElement->getCSSValue($attributeType), $attributeValue);
-                }
+                            $cssValue = $htmlElement->getCSSValue($attributeType);
+                            $cssExpectedValue = $attributeValue;
+                            $this->assertEquals($cssValue, $cssExpectedValue);
+                        }
+                    }
                 } catch (\Exception $e){
-                    print_r(array($selector, $url));
+                    print_r(array($e->getMessage(),$selector, $url,$cssValue,$cssExpectedValue));
                 }
             }
 
