@@ -1,0 +1,9 @@
+{
+  "name": "phpunit",
+  "description": "PHPUnit",
+  "require": {
+    "phpunit/phpunit": "3.7.*@stable",
+    "facebook/webdriver": "dev-master"
+  },
+ "minimum-stability": "dev"
+}
