@@ -15,28 +15,29 @@ class CssTests extends PHPUnit_Framework_TestCase
 
     protected $environments = ['dev', 'qa'];
     protected $siteComponents = [
-        'top10antivirussoftware.co.uk' => [
-            'top_products' => 'bullguardukreview',
+        'preview.top10antivirussoftware.com' => [
+            'top_products' => 'mcafeeavreview',
             'chart' => '',
             'feature_comparison' => 'featurecomparison',
-            'editors_review' => '10-ways-to-improve-security-on-your-computer-article',
-            'article' => 'bullguardukreview'
+            'editors_review' => 'mcafeeavreview',
+            'article' => 'mcafeeavreview'
         ]
     ];
     protected $elementsToTest = [
+        //small
         'top_products' => [
             'elements' => [
-                'css_selector' => '.product-link-button.big',
+                'css_selector' => '.link-type-btn.small',
                 'attributes' => [
                     'hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '93px',
+                        'height' => '33px',
+                        'font-size' => '18px'
                     ],
                     'non_hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '95px',
+                        'height' => '35px',
+                        'font-size' => '15px'
                     ],
                 ]
             ]
@@ -46,19 +47,19 @@ class CssTests extends PHPUnit_Framework_TestCase
                 'css_selector' => '.chart-table .product-link .link-type-btn',
                 'attributes' => [
                     'hover' => [
-                        'width' => '113px',
-                        'height' => '40px',
-                        'font-size' => '18px'
+                        'width' => '117px',
+                        'height' => '32px',
+                        'font-size' => '20px'
                     ],
                     'non_hover' => [
-                        'width' => '113px',
-                        'height' => '40px',
-                        'font-size' => '18px'
+                        'width' => '124px',
+                        'height' => '35px',
+                        'font-size' => '24px'
                     ],
                 ]
             ]
         ]
-        ,
+        /*,
         'feature_comparison' => [
             'elements' => [
                 'css_selector' => '.link-type-btn.small',
@@ -75,21 +76,21 @@ class CssTests extends PHPUnit_Framework_TestCase
                     ],
                 ]
             ]
-        ]
+        ]*/
         ,
         'editors_review' => [
             'elements' => [
                 'css_selector' => 'a.product-link-button.big',
                 'attributes' => [
                     'hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '334px',
+                        'height' => '42px',
+                        'font-size' => '24px'
                     ],
                     'non_hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '333px',
+                        'height' => '41px',
+                        'font-size' => '23px'
                     ],
                 ]
             ]
@@ -100,14 +101,14 @@ class CssTests extends PHPUnit_Framework_TestCase
                 'css_selector' => 'a.product-link-button.big',
                 'attributes' => [
                     'hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '334px',
+                        'height' => '42px',
+                        'font-size' => '24px'
                     ],
                     'non_hover' => [
-                        'width' => '330px',
-                        'height' => '38px',
-                        'font-size' => '20px'
+                        'width' => '333px',
+                        'height' => '41px',
+                        'font-size' => '23px'
                     ],
                 ]
             ]
@@ -138,27 +139,36 @@ class CssTests extends PHPUnit_Framework_TestCase
                 $this->webDriver->get($url);
 
                 // checking that page title contains word 'GitHub'
-                $elementSet = $this->elementsToTest[$componentName];
+                if (!empty($this->elementsToTest[$componentName])) {
+                    $elementSet = $this->elementsToTest[$componentName];
 
-                try {
-                    foreach ($elementSet as $actionStateAttributes) {
-                        $selector = $actionStateAttributes['css_selector'];
-                        $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
 
-                        $cssValue = $cssExpectedValue = '';
-                        foreach ($actionStateAttributes['attributes'] as $actionState => $attributes) {
-                            foreach ($attributes as $attributeType => $attributeValue) {
-                                if ($actionState === 'hover') {
-                                    $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
+                    try {
+                        foreach ($elementSet as $actionStateAttributes) {
+                            $selector = $actionStateAttributes['css_selector'];
+                            $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+
+                            $cssValue = $cssExpectedValue = '';
+                            foreach ($actionStateAttributes['attributes'] as $actionState => $attributes) {
+                                foreach ($attributes as $attributeType => $attributeValue) {
+                                    if ($actionState === 'hover') {
+                                        $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
+                                    } else {
+                                        $link = $this->webDriver->findElement(WebDriverBy::tagName('h1'));
+                                        $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
+
+                                    }
+
+                                    $cssValue = $htmlElement->getCSSValue($attributeType);
+                                    $cssExpectedValue = $attributeValue;
+                                    $this->assertEquals($cssValue, $cssExpectedValue);
                                 }
-                                $cssValue = $htmlElement->getCSSValue($attributeType);
-                                $cssExpectedValue = $attributeValue;
-                                $this->assertEquals($cssValue, $cssExpectedValue);
                             }
                         }
+
+                    } catch (\Exception $e) {
+                        print_r(array($e->getMessage(), $selector, $url, 'real',$cssValue, 'exp',$cssExpectedValue));
                     }
-                } catch (\Exception $e) {
-                    print_r(array($e->getMessage(), $selector, $url, $cssValue, $cssExpectedValue));
                 }
             }
 
