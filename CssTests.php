@@ -154,7 +154,7 @@ class CssTests extends PHPUnit_Framework_TestCase
                                     if ($actionState === 'hover') {
                                         $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
                                     } else {
-                                        $link = $this->webDriver->findElement(WebDriverBy::tagName('h1'));
+                                        $link = $this->webDriver->findElement(WebDriverBy::tagName('ul'));
                                         $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
 
                                     }
