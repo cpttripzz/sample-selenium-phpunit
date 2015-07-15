@@ -158,8 +158,9 @@ class CssTests extends PHPUnit_Framework_TestCase
                                 $selector = $actionStateAttributes['css_selector'];
                                 $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
 
-                                $cssValue = $cssExpectedValue = '';
+                                $cssValue = $cssExpectedValue = $state = '';
                                 foreach ($actionStateAttributes['attributes'] as $actionState => $attributes) {
+                                    $state = $actionState;
                                     foreach ($attributes as $attributeType => $attributeValue) {
                                         if ($actionState === 'hover') {
                                             $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
@@ -177,7 +178,7 @@ class CssTests extends PHPUnit_Framework_TestCase
                             }
 
                         } catch (\Exception $e) {
-                            print_r(array($e->getMessage(), $selector, $url, 'real', $cssValue, 'exp', $cssExpectedValue));
+                            print_r(array($e->getMessage(), $selector, $url, 'state' => $state, 'real', $cssValue, 'exp', $cssExpectedValue));
                         }
                     }
                 }
