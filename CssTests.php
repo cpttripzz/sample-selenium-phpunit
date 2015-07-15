@@ -15,10 +15,17 @@ class CssTests extends PHPUnit_Framework_TestCase
 
     protected $environments = ['dev', 'qa'];
     protected $siteComponents = [
-        'preview.top10antivirussoftware.com' => [
+        'top10antivirussoftware.com' => [
+            'top_products' => ['mcafeeavreview'],
+            'chart' => '',
+            'feature_comparison' => ['featurecomparison', 'mcafeeavreview'],
+            'editors_review' => 'mcafeeavreview',
+            'article' => 'mcafeeavreview'
+        ],
+        'top10antivirussoftware.co.uk' => [
             'top_products' => 'mcafeeavreview',
             'chart' => '',
-            'feature_comparison' => 'featurecomparison',
+            'feature_comparison' => ['featurecomparison', 'mcafeeavreview'],
             'editors_review' => 'mcafeeavreview',
             'article' => 'mcafeeavreview'
         ]
@@ -134,44 +141,47 @@ class CssTests extends PHPUnit_Framework_TestCase
 
         foreach ($this->siteComponents as $site => $components) {
 
-            foreach ($components as $componentName => $componentUrl) {
-                $url = 'http://' . 'www.' . $site . '/' . $componentUrl;
-                $this->webDriver->get($url);
+            foreach ($components as $componentName => $componentSet) {
+                if(!is_array($componentSet)){
+                    $componentSet = array($componentSet);
+                }
+                foreach ($componentSet as $componentUrl) {
+                    $url = 'http://' . 'www.' . $site . '/' . $componentUrl;
+                    $this->webDriver->get($url);
 
-                // checking that page title contains word 'GitHub'
-                if (!empty($this->elementsToTest[$componentName])) {
-                    $elementSet = $this->elementsToTest[$componentName];
+                    // checking that page title contains word 'GitHub'
+                    if (!empty($this->elementsToTest[$componentName])) {
+                        $elementSet = $this->elementsToTest[$componentName];
 
+                        try {
+                            foreach ($elementSet as $actionStateAttributes) {
+                                $selector = $actionStateAttributes['css_selector'];
+                                $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
 
-                    try {
-                        foreach ($elementSet as $actionStateAttributes) {
-                            $selector = $actionStateAttributes['css_selector'];
-                            $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                                $cssValue = $cssExpectedValue = '';
+                                foreach ($actionStateAttributes['attributes'] as $actionState => $attributes) {
+                                    foreach ($attributes as $attributeType => $attributeValue) {
+                                        if ($actionState === 'hover') {
+                                            $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
+                                        } else {
+                                            $link = $this->webDriver->findElement(WebDriverBy::tagName('ul'));
+                                            $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
 
-                            $cssValue = $cssExpectedValue = '';
-                            foreach ($actionStateAttributes['attributes'] as $actionState => $attributes) {
-                                foreach ($attributes as $attributeType => $attributeValue) {
-                                    if ($actionState === 'hover') {
-                                        $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
-                                    } else {
-                                        $link = $this->webDriver->findElement(WebDriverBy::tagName('ul'));
-                                        $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
+                                        }
 
+                                        $cssValue = $htmlElement->getCSSValue($attributeType);
+                                        $cssExpectedValue = $attributeValue;
+                                        $this->assertEquals($cssValue, $cssExpectedValue);
                                     }
-
-                                    $cssValue = $htmlElement->getCSSValue($attributeType);
-                                    $cssExpectedValue = $attributeValue;
-                                    $this->assertEquals($cssValue, $cssExpectedValue);
                                 }
                             }
-                        }
 
-                    } catch (\Exception $e) {
-                        print_r(array($e->getMessage(), $selector, $url, 'real',$cssValue, 'exp',$cssExpectedValue));
+                        } catch (\Exception $e) {
+                            print_r(array($e->getMessage(), $selector, $url, 'real', $cssValue, 'exp', $cssExpectedValue));
+                        }
                     }
                 }
             }
-
 
         }
 
