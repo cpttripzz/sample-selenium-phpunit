@@ -146,7 +146,9 @@ class CssTests extends PHPUnit_Framework_TestCase
 
 
         $siteSelect = new WebDriverSelect($this->webDriver->findElement(WebDriverBy::className('menuSiteSelector')));
-
+        $this->webDriver->wait(10, 500)->until(
+            WebDriverExpectedCondition::visibilityOf($siteSelect)
+        );
         $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
 
         foreach ($data['sites'] as $sitesData) {
@@ -162,8 +164,6 @@ class CssTests extends PHPUnit_Framework_TestCase
             $themeBtn->click();
 
             sleep(1);
-
-
 
             foreach($sitesData['css_attributes'] as $siteDataCssAttributes){
                 foreach( $siteDataCssAttributes as $cssElement => $cssElementProperties ) {
@@ -365,7 +365,7 @@ class CssTests extends PHPUnit_Framework_TestCase
         switch($GLOBALS['ENV'] ){
             case 'staging':
             case 'qa':
-                return "http://boost.{$GLOBALS['ENV']}.naturalint.com/";
+                return "http://boost.{$GLOBALS['ENV']}.naturalint.com";
                 break;
             case 'local':
             default:
