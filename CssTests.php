@@ -144,15 +144,16 @@ class CssTests extends PHPUnit_Framework_TestCase
         );
         $confirm->click();
 
-
-        $siteSelect = new WebDriverSelect($this->webDriver->findElement(WebDriverBy::className('menuSiteSelector')));
+        $siteSelect = $this->webDriver->findElement(WebDriverBy::className('menuSiteSelector'));
         $this->webDriver->wait(10, 500)->until(
             WebDriverExpectedCondition::visibilityOf($siteSelect)
         );
+
+        $siteSelect = new WebDriverSelect($siteSelect);
+
         $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
 
         foreach ($data['sites'] as $sitesData) {
-
 
             $siteSelect->selectByVisibleText($sitesData['display']);
 
