@@ -93,11 +93,26 @@ class CssTests extends PHPUnit_Framework_TestCase
         'xlrg-hvr' => 4
     ];
 
+
+    public function getBoosHost()
+    {
+        switch($GLOBALS['ENV'] ){
+            case 'staging':
+            case 'qa':
+                return "http://boost.{$GLOBALS['ENV']}.naturalint.com/";
+                break;
+            case 'local':
+            default:
+                return 'http://localhost:3010';
+                break;
+        }
+    }
+
+
     public function testSetCssAttributesInBoost()
     {
-
-
-        $url = 'http://localhost:3010/login';
+        $boostHost = $this->getBoostHost();
+        $url = $boostHost ."/login";
         $this->webDriver->get($url);
         $loginEl = $this->webDriver->findElement(WebDriverBy::cssSelector('a.googleplus'));
         $this->webDriver->wait(10, 500)->until(
@@ -228,12 +243,13 @@ class CssTests extends PHPUnit_Framework_TestCase
         $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
 
         foreach ($data['sites'] as $sitesData) {
-            $site = $sitesData['host'];
+            $site = $this->getRendererHost($sitesData['host']);
+
             $pagesToCheck = $sitesData['pages_to_check'];
             foreach($pagesToCheck as $pageToCheck) {
                 foreach ($pageToCheck as $pageType => $pages) {
                     foreach($pages as $page) {
-                        $url = 'http://' . 'www.' . $site . '/' . $page;
+                        $url = $site . '/' . $page;
                         $this->webDriver->get($url);
                         $cssFamily = $this->pageTypeToCssFamily[$pageType];
                         if(empty($this->pageTypeToCssSelector[$pageType])){
@@ -241,7 +257,14 @@ class CssTests extends PHPUnit_Framework_TestCase
                         }
                         $selectors = $this->pageTypeToCssSelector[$pageType];
                         foreach ($selectors['elements'] as $selectorCssFamily => $selector) {
-                            $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                            try {
+                                $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                            }
+                            catch (\Exception $e){
+                                print_r(array($site, $pageType,$selector));
+                                continue;
+                            }
+
                             foreach ($sitesData['css_attributes'] as $siteDataCssAttributes) {
                                 foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
                                     if($cssElement !== $selectorCssFamily){
@@ -326,5 +349,28 @@ class CssTests extends PHPUnit_Framework_TestCase
         }
 
 
+    }
+
+    protected function getRendererHost($host){
+
+        $preview = ($GLOBALS['PREVIEW_MODE'] == true) ? 'preview.' : '';
+
+        $env = $GLOBALS['ENV'] . '.';
+
+        return 'http://www.' .$preview . $env .$host;
+    }
+
+    protected function getBoostHost()
+    {
+        switch($GLOBALS['ENV'] ){
+            case 'staging':
+            case 'qa':
+                return "http://boost.{$GLOBALS['ENV']}.naturalint.com/";
+                break;
+            case 'local':
+            default:
+                return 'http://localhost:3010';
+                break;
+        }
     }
 }

@@ -1,7 +1,7 @@
 sites:
   -
     display: Hosting CA
-    host: local.thetop10webhosting.ca
+    host: thetop10webhosting.ca
     site_id: 113
     pages_to_check:
       - top_products:
@@ -41,8 +41,49 @@ sites:
          -  font-size: 20
 
   -
+    display: FlowersQA
+    host: top10flowerwebsites.com
+    site_id: 142
+    pages_to_check:
+      - top_products:
+         -  mcafeeavreview
+      - chart:
+          -
+      - feature_comparison:
+          - featurecomparison
+      - editors_review:
+          - mcafeeavreview
+      - article:
+          - mcafeeavreview
+    css_attributes:
+      - sml:
+         -  width: 91
+         -  height: 30
+         -  font-size: 15
+      - sml-hvr:
+         -  width: 92
+         -  height: 30
+         -  font-size: 15
+      - med:
+         -  width: 119
+         -  height: 40
+         -  font-size: 18
+      - med-hvr:
+         -  width: 120
+         -  height: 40
+         -  font-size: 18
+      - xlrg:
+         -  width: 331
+         -  height: 38
+         -  font-size: 20
+      - xlrg-hvr:
+         -  width: 332
+         -  height: 38
+         -  font-size: 20
+
+  -
     display: Antivirus US
-    host: preview.local.top10antivirussoftware.com
+    host: top10antivirussoftware.com
     site_id: 64
     pages_to_check:
       - top_products:
