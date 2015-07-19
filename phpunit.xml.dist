@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit>
+    <php>
+        <var name="EMAIL" value="dummy@naturalint.com"/>
+        <var name="PASSWORD" value="dummy"/>
+    </php>
+    <testsuites>
+        <testsuite name="Project Test Suite">
+            <directory>src/*/*/Tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+
+        </whitelist>
+    </filter>
+</phpunit>

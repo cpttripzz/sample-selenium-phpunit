@@ -1,0 +1,42 @@
+sites:
+  -
+    display: Hosting CA
+    host: thetop10webhosting.ca
+    site_id: 113
+    pages_to_check:
+      - top_products:
+         -  ipagecareview
+      - chart:
+          -
+      - feature_comparison:
+          - featurecomparison
+      - editors_review:
+          - ipagecareview
+      - article:
+          - ipagecareview
+    css_attributes:
+      - sml:
+         -  width: 91
+         -  height: 30
+         -  font-size: 15
+      - sml-hvr:
+         -  width: 92
+         -  height: 30
+         -  font-size: 15
+      - med:
+         -  width: 119
+         -  height: 40
+         -  font-size: 18
+      - med-hvr:
+         -  width: 120
+         -  height: 40
+         -  font-size: 18
+      - xlrg:
+         -  width: 331
+         -  height: 38
+         -  font-size: 20
+      - xlrg-hvr:
+         -  width: 332
+         -  height: 38
+         -  font-size: 20
+
