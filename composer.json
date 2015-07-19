@@ -3,7 +3,8 @@
   "description": "PHPUnit",
   "require": {
     "phpunit/phpunit": "3.7.*@stable",
-    "facebook/webdriver": "dev-master"
+    "facebook/webdriver": "dev-master",
+    "mustangostang/spyc": "^0.5.0@dev"
   },
  "minimum-stability": "dev"
 }

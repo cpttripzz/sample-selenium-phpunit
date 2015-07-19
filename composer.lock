@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4b6eefd9da27ba6e385f0f9a7fa348c9",
+    "hash": "ae8076cb6578bcb5e61e01d2ead7efa7",
     "packages": [
         {
             "name": "facebook/webdriver",
@@ -46,6 +46,53 @@
                 "webdriver"
             ],
             "time": "2015-06-09 17:09:16"
+        },
+        {
+            "name": "mustangostang/spyc",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mustangostang/spyc.git",
+                "reference": "eeb9f7c47e1457770d64c7fb1f3d4aabff52de4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mustangostang/spyc/zipball/eeb9f7c47e1457770d64c7fb1f3d4aabff52de4b",
+                "reference": "eeb9f7c47e1457770d64c7fb1f3d4aabff52de4b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "Spyc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mustangostang",
+                    "email": "vlad.andersen@gmail.com"
+                }
+            ],
+            "description": "A simple YAML loader/dumper class for PHP",
+            "homepage": "https://github.com/mustangostang/spyc/",
+            "keywords": [
+                "spyc",
+                "yaml",
+                "yml"
+            ],
+            "time": "2014-08-21 09:14:01"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -472,7 +519,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "phpunit/phpunit": 0,
-        "facebook/webdriver": 20
+        "facebook/webdriver": 20,
+        "mustangostang/spyc": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

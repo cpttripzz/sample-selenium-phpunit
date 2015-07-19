@@ -14,117 +14,67 @@ class CssTests extends PHPUnit_Framework_TestCase
     protected $webDriver;
 
     protected $environments = ['dev', 'qa'];
-    protected $siteComponents = [
-        'top10antivirussoftware.com' => [
-            'top_products' => ['mcafeeavreview'],
-            'chart' => '',
-            'feature_comparison' => ['featurecomparison', 'mcafeeavreview'],
-            'editors_review' => 'mcafeeavreview',
-            'article' => 'mcafeeavreview'
-        ],
-        'top10antivirussoftware.co.uk' => [
-            'top_products' => 'mcafeeavreview',
-            'chart' => '',
-            'feature_comparison' => ['featurecomparison', 'mcafeeavreview'],
-            'editors_review' => 'mcafeeavreview',
-            'article' => 'mcafeeavreview'
-        ]
+    protected $siteComponents = [];
+    protected $pageTypeToCssFamily = [
+        'top_products' => 'sml',
+        'chart' => 'med',
+        'feature_comparison' => '',
+        'editors_review' => 'xlrg',
+        'article' => 'xlrg'
     ];
-    protected $elementsToTest = [
+
+    protected $pageTypeToCssSelector = [
         //small
         'top_products' => [
             'elements' => [
-                'css_selector' => '.link-type-btn.small',
-                'attributes' => [
-                    'hover' => [
-                        'width' => '93px',
-                        'height' => '33px',
-                        'font-size' => '18px'
-                    ],
-                    'non_hover' => [
-                        'width' => '95px',
-                        'height' => '35px',
-                        'font-size' => '15px'
-                    ],
-                ]
+                'sml' => '.link-type-btn.small',
             ]
         ],
         'chart' => [
             'elements' => [
-                'css_selector' => '.chart-table .product-link .link-type-btn',
-                'attributes' => [
-                    'hover' => [
-                        'width' => '117px',
-                        'height' => '32px',
-                        'font-size' => '20px'
-                    ],
-                    'non_hover' => [
-                        'width' => '124px',
-                        'height' => '35px',
-                        'font-size' => '24px'
-                    ],
-                ]
+                'med' => '.chart-table .product-link .link-type-btn',
             ]
         ]
-        /*,
-        'feature_comparison' => [
+
+        /*'feature_comparison' => [
             'elements' => [
                 'css_selector' => '.link-type-btn.small',
-                'attributes' => [
-                    'hover' => [
-                        'width' => '113px',
-                        'height' => '30px',
-                        'font-size' => '18px'
-                    ],
-                    'non_hover' => [
-                        'width' => '113px',
-                        'height' => '30px',
-                        'font-size' => '18px'
-                    ],
-                ]
             ]
         ]*/
         ,
         'editors_review' => [
             'elements' => [
-                'css_selector' => 'a.product-link-button.big',
-                'attributes' => [
-                    'hover' => [
-                        'width' => '334px',
-                        'height' => '42px',
-                        'font-size' => '24px'
-                    ],
-                    'non_hover' => [
-                        'width' => '333px',
-                        'height' => '41px',
-                        'font-size' => '23px'
-                    ],
-                ]
+                'xlrg' => 'a.product-link-button.big',
             ]
 
         ],
         'article' => [
             'elements' => [
-                'css_selector' => 'a.product-link-button.big',
-                'attributes' => [
-                    'hover' => [
-                        'width' => '334px',
-                        'height' => '42px',
-                        'font-size' => '24px'
-                    ],
-                    'non_hover' => [
-                        'width' => '333px',
-                        'height' => '41px',
-                        'font-size' => '23px'
-                    ],
-                ]
+                'xlrg' => 'a.product-link-button.big',
             ]
         ]
 
     ];
-
+    protected $cssElementUnitsBoostMapping = [
+        'width' => 1,
+        'height' => 2,
+        'font-size' => 3
+    ];
     public function setUp()
     {
+        /*
+         * $host = 'http://localhost:4444/wd/hub'; // this is the default
+        $capabilities = DesiredCapabilities::htmlUnitWithJS();
+        // For Chrome
+        $options = new ChromeOptions();
+//      ChromeOptions options = new ChromeOptions();
+        $options->addArguments(["--start-maximized"]);
+        $capabilities = DesiredCapabilities::chrome();
+        $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
+
+
+        $this->webDriver = RemoteWebDriver::create($host, $capabilities, 5000);
+         */
         $capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
         $this->webDriver = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
     }
@@ -134,11 +84,183 @@ class CssTests extends PHPUnit_Framework_TestCase
         $this->webDriver->close();
     }
 
+    protected $boostCssSizeMapping = [
+        'sml' => 9,
+        'sml-hvr' => 10,
+        'med' => 5,
+        'med-hvr' => 6,
+        'xlrg' => 3,
+        'xlrg-hvr' => 4
+    ];
 
-    public function testCssAttributes()
+    public function testGetCssAttributesInBoost()
     {
 
 
+        $url = 'http://localhost:3010/login';
+        $this->webDriver->get($url);
+        $loginEl = $this->webDriver->findElement(WebDriverBy::cssSelector('a.googleplus'));
+        $this->webDriver->wait(10, 500)->until(
+            WebDriverExpectedCondition::visibilityOf($loginEl)
+
+        );
+
+        $loginEl->click();
+        $email = $this->webDriver->findElement(WebDriverBy::id('Email'));
+        $email->sendKeys($GLOBALS['EMAIL']);
+
+        $next = $this->webDriver->findElement(WebDriverBy::id('next'));
+        $next->click();
+
+        sleep(2);
+        $passwd = $this->webDriver->findElement(WebDriverBy::id('Passwd'));
+        $this->webDriver->wait(10, 500)->until(
+            WebDriverExpectedCondition::visibilityOf($passwd)
+        );
+
+        $passwd->sendKeys($GLOBALS['PASSWORD']);
+        $signIn = $this->webDriver->findElement(WebDriverBy::id('signIn'));
+        $signIn->click();
+        sleep(5);
+
+        $confirm = $this->webDriver->findElement(WebDriverBy::id('submit_approve_access'));
+        $this->webDriver->wait(10, 500)->until(
+            WebDriverExpectedCondition::visibilityOf($confirm)
+        );
+        $confirm->click();
+
+
+        $siteSelect = new WebDriverSelect($this->webDriver->findElement(WebDriverBy::className('menuSiteSelector')));
+
+        $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
+
+        foreach ($data['sites'] as $sitesData) {
+
+
+            $siteSelect->selectByVisibleText($sitesData['display']);
+
+            sleep(2);
+            $themeBtn = $this->webDriver->findElement(WebDriverBy::linkText('Theme'));
+            $this->webDriver->wait(10, 500)->until(
+                WebDriverExpectedCondition::visibilityOf($themeBtn)
+            );
+            $themeBtn->click();
+
+            sleep(1);
+
+
+
+            foreach($sitesData['css_attributes'] as $siteDataCssAttributes){
+                foreach( $siteDataCssAttributes as $cssElement => $cssElementProperties ) {
+                    $mappedBoostId = $this->boostCssSizeMapping[$cssElement];
+                    $siteId = $sitesData['site_id'];
+                    $xpath = "(//button[@type='button'])[23]";
+                    $btn  = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
+                    $btn->click();
+                    $xpath  = "//div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/span/div/form/div/div[{$mappedBoostId}]";
+                    $btn  = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
+                    $this->webDriver->wait(10, 500)->until(
+                        WebDriverExpectedCondition::visibilityOf($btn)
+                    );
+                    $btn->click();
+                    $cssElementBoostMapping = [
+                        'width' => 3,
+                        'height' => 4,
+                        'font-size' => 5
+                    ];
+
+                    foreach($cssElementProperties as $cssElementProperty){
+                        foreach($cssElementProperty as $cssElementPropertyName => $cssElementPropertyValue) {
+                            $cssBoostId = $cssElementBoostMapping[$cssElementPropertyName];
+                            $xpath = "(//input[@type='number'])[{$cssBoostId}]";
+                            $attrValue = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
+                            if(!$attrValue->isDisplayed()){
+                                $cssBoostId = $this->getCssElementUnitsBoostMapping($cssElementPropertyName);
+                                $buttonId =$cssBoostId+23;
+                                $xpath = "(//button[@type='button'])[{$buttonId}]";
+                                $cssBoostId = '[' . $cssBoostId . ']';
+                                $attrUnits = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
+                                $attrUnits->click();
+                                $xpathUnits = "
+                    //div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/style-input/input-group/fieldset/div/style-input{$cssBoostId}/input-dimension/div/div/div/div[2]/span/div/form/div/div[3]";
+                                $attrUnits = $this->webDriver->findElement(WebDriverBy:: xpath($xpathUnits));
+                                $this->webDriver->wait(10, 500)->until(
+                                    WebDriverExpectedCondition::visibilityOf($attrUnits)
+                                );
+                                $attrUnits->click();
+                            }
+                            $this->webDriver->wait(10, 500)->until(
+                                WebDriverExpectedCondition::visibilityOf($attrValue)
+                            );
+                            $attrValue->clear();
+                            $attrValue->sendKeys($cssElementPropertyValue);
+                        }
+                    }
+                }
+
+            }
+
+
+            $saveBtn = $this->webDriver->findElement(WebDriverBy::cssSelector("button.btn.btn-primary"));
+            $saveBtn->click();
+
+            sleep(3);
+            $publishBtn = $this->webDriver->findElement(WebDriverBy::xpath("(//button[@type='submit'])[2]"));
+            $publishBtn->click();
+            sleep(1);
+            $btnConfirm = $this->webDriver->findElement(WebDriverBy::cssSelector("div.modal-footer.ng-scope > button.btn.green"));
+            $this->webDriver->wait(10, 500)->until(
+                WebDriverExpectedCondition::visibilityOf($btnConfirm)
+            );
+            $btnConfirm->click();
+        }
+    }
+
+    protected function getCssElementUnitsBoostMapping($cssElementPropertyName){
+        return $this->cssElementUnitsBoostMapping[$cssElementPropertyName];
+    }
+
+    public function testCssAttributesOnLiveSite()
+    {
+        $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
+
+        foreach ($data['sites'] as $sitesData) {
+            $site = $sitesData['host'];
+            $pagesToCheck = $sitesData['pages_to_check'];
+            foreach($pagesToCheck as $pageToCheck) {
+                foreach ($pageToCheck as $pageType => $pages) {
+                    foreach($pages as $page) {
+                        $url = 'http://' . 'www.' . $site . '/' . $page;
+                        $this->webDriver->get($url);
+                        $cssFamily = $this->pageTypeToCssFamily[$pageType];
+                        $selectors = $this->pageTypeToCssSelector[$pageType];
+                        foreach ($selectors['elements'] as $selectorCssFamily => $selector) {
+                            $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                            foreach ($sitesData['css_attributes'] as $siteDataCssAttributes) {
+                                foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
+                                    if($cssElement !== $selectorCssFamily){
+                                        continue;
+                                    }
+                                    foreach ($cssElementProperties as $cssElementProperty) {
+                                        foreach ($cssElementProperty as $cssElementPropertyName => $expectedCssElementPropertyValue) {
+                                            if (strstr($cssElementPropertyName,'hvr')) {
+                                                $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
+                                            } else {
+                                                $link = $this->webDriver->findElement(WebDriverBy::tagName('ul'));
+                                                $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
+                                            }
+                                            $cssValue = $htmlElement->getCSSValue($cssElementPropertyName);
+                                            $this->assertEquals($cssValue, $expectedCssElementPropertyValue . 'px');
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
         foreach ($this->siteComponents as $site => $components) {
 
             foreach ($components as $componentName => $componentSet) {
