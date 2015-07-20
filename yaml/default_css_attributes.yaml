@@ -1,25 +1,25 @@
 css_attributes:
     - sml:
-       -  width: 90px
-       -  height: 30px
-       -  font-size: 15px
-    -  sml-hvr:
-       -  width: 90px
-       -  height: 30px
-       -  font-size: 15px
+       -  width: 90
+       -  height: 30
+       -  font-size: 15
+    - sml-hvr:
+       -  width: 90
+       -  height: 30
+       -  font-size: 15
     - med:
-       -  width: 118px
-       -  height: 40px
-       -  font-size: 18px
-    -  med-hvr:
-       -  width: 118px
-       -  height: 40px
-       -  font-size: 18px
+       -  width: 118
+       -  height: 40
+       -  font-size: 18
+    - med-hvr:
+       -  width: 118
+       -  height: 40
+       -  font-size: 18
     - xlrg:
-       -  width: 330px
-       -  height: 38px
-       -  font-size: 20px
-    -  xlrg-hvr:
-       -  width: 330px
-       -  height: 38px
-       -  font-size: 20px
+       -  width: 330
+       -  height: 38
+       -  font-size: 20
+    - xlrg-hvr:
+       -  width: 330
+       -  height: 38
+       -  font-size: 20
