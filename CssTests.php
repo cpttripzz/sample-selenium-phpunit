@@ -143,7 +143,7 @@ class CssTests extends PHPUnit_Framework_TestCase
             WebDriverExpectedCondition::visibilityOf($confirm)
         );
         $confirm->click();
-
+        sleep(2);
         $siteSelect = $this->webDriver->findElement(WebDriverBy::className('menuSiteSelector'));
         $this->webDriver->wait(10, 500)->until(
             WebDriverExpectedCondition::visibilityOf($siteSelect)
