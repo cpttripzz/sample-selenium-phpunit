@@ -145,7 +145,7 @@ class CssTests extends PHPUnit_Framework_TestCase
         $confirm->click();
         sleep(2);
         $siteSelect = $this->webDriver->findElement(WebDriverBy::className('menuSiteSelector'));
-        $this->webDriver->wait(10, 500)->until(
+        $this->webDriver->wait(30, 500)->until(
             WebDriverExpectedCondition::visibilityOf($siteSelect)
         );
 
@@ -171,6 +171,7 @@ class CssTests extends PHPUnit_Framework_TestCase
                     $mappedBoostId = $this->boostCssSizeMapping[$cssElement];
                     $siteId = $sitesData['site_id'];
                     $xpath = "(//button[@type='button'])[23]";
+                    sleep(1);
                     $btn  = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
                     $this->webDriver->wait(10, 500)->until(
                         WebDriverExpectedCondition::visibilityOf($btn)
