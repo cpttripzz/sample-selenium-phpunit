@@ -22,7 +22,6 @@ class CssTests extends PHPUnit_Framework_TestCase
         'editors_review' => 'xlrg',
         'article' => 'xlrg'
     ];
-
     protected $pageTypeToCssSelector = [
         //small
         'top_products' => [
@@ -65,6 +64,22 @@ class CssTests extends PHPUnit_Framework_TestCase
         'height' => 2,
         'font-size' => 3
     ];
+    protected $boostCssSectionMapping = [
+        'all' => 0,
+        'all-hvr' => 2,
+        'sml' => 9,
+        'sml-hvr' => 10,
+        'med' => 7,
+        'med-hvr' => 8,
+        'xlrg' => 3,
+        'xlrg-hvr' => 4
+    ];
+    protected $cssElementBoostMapping = [
+        'width' => 3,
+        'height' => 4,
+        'font-size' => 5,
+        'border-radius' => 3
+    ];
 
     public function setUp()
     {
@@ -90,31 +105,7 @@ class CssTests extends PHPUnit_Framework_TestCase
         $this->webDriver->close();
     }
 
-    protected $boostCssSizeMapping = [
-        'sml' => 9,
-        'sml-hvr' => 10,
-        'med' => 7,
-        'med-hvr' => 8,
-        'xlrg' => 3,
-        'xlrg-hvr' => 4
-    ];
-
-
-    public function getBoosHost()
-    {
-        switch ($GLOBALS['ENV']) {
-            case 'staging':
-            case 'qa':
-                return "http://boost.{$GLOBALS['ENV']}.naturalint.com/";
-                break;
-            case 'local':
-            default:
-                return 'http://localhost:3010';
-                break;
-        }
-    }
-
-    public function testSetCssAttributesInBoost()
+    public function testSetCssButtonFamilyAttributesInBoost()
     {
         $this->doBoostLogin();
         $siteSelect = $this->webDriver->findElement(WebDriverBy::className('menuSiteSelector'));
@@ -139,9 +130,9 @@ class CssTests extends PHPUnit_Framework_TestCase
 
             sleep(1);
 
-            foreach ($sitesData['css_attributes'] as $siteDataCssAttributes) {
+            foreach ($sitesData['css_attributes_families'] as $siteDataCssAttributes) {
                 foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
-                    $mappedBoostId = $this->boostCssSizeMapping[$cssElement];
+                    $mappedBoostId = $this->getBoostCssSectionMapping($cssElement);
                     $siteId = $sitesData['site_id'];
                     $xpath = "(//button[@type='button'])[23]";
                     sleep(1);
@@ -150,21 +141,18 @@ class CssTests extends PHPUnit_Framework_TestCase
                         WebDriverExpectedCondition::visibilityOf($btn)
                     );
                     $btn->click();
-                    $xpath = "//div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/span/div/form/div/div[{$mappedBoostId}]";
+
+                    $xpath = $this->getBoostCssSectionXpath($siteId, $mappedBoostId);
                     $btn = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
                     $this->webDriver->wait(10, 500)->until(
                         WebDriverExpectedCondition::visibilityOf($btn)
                     );
                     $btn->click();
-                    $cssElementBoostMapping = [
-                        'width' => 3,
-                        'height' => 4,
-                        'font-size' => 5
-                    ];
+
 
                     foreach ($cssElementProperties as $cssElementProperty) {
                         foreach ($cssElementProperty as $cssElementPropertyName => $cssElementPropertyValue) {
-                            $cssBoostId = $cssElementBoostMapping[$cssElementPropertyName];
+                            $cssBoostId = $this->cssElementBoostMapping [$cssElementPropertyName];
                             $xpath = "(//input[@type='number'])[{$cssBoostId}]";
                             $attrValue = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
                             if (!$attrValue->isDisplayed()) {
@@ -209,7 +197,8 @@ class CssTests extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCssAttributesOnRenderedSite()
+
+    public function testCssButtonFamilyAttributesOnRenderedSite()
     {
         $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
 
@@ -235,7 +224,7 @@ class CssTests extends PHPUnit_Framework_TestCase
                                 continue;
                             }
 
-                            foreach ($sitesData['css_attributes'] as $siteDataCssAttributes) {
+                            foreach ($sitesData['css_attributes_families'] as $siteDataCssAttributes) {
                                 foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
                                     if ($cssElement !== $selectorCssFamily) {
                                         continue;
@@ -267,7 +256,7 @@ class CssTests extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSetCssAttributesToDefaultsInBoost()
+    public function testSetCssButtonFamilyAttributesToDefaultsInBoost()
     {
         $this->doBoostLogin();
         $siteSelect = $this->webDriver->findElement(WebDriverBy::className('menuSiteSelector'));
@@ -292,9 +281,9 @@ class CssTests extends PHPUnit_Framework_TestCase
 
             sleep(1);
             $cssDefaultData = Spyc::YAMLLoad('./yaml/default_css_attributes.yaml');
-            foreach ($cssDefaultData['css_attributes'] as $siteDataCssAttributes) {
+            foreach ($cssDefaultData['css_attributes_families'] as $siteDataCssAttributes) {
                 foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
-                    $mappedBoostId = $this->boostCssSizeMapping[$cssElement];
+                    $mappedBoostId = $this->boostCssSectionMapping[$cssElement];
                     $siteId = $sitesData['site_id'];
                     $xpath = "(//button[@type='button'])[23]";
                     sleep(1);
@@ -303,21 +292,16 @@ class CssTests extends PHPUnit_Framework_TestCase
                         WebDriverExpectedCondition::visibilityOf($btn)
                     );
                     $btn->click();
-                    $xpath = "//div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/span/div/form/div/div[{$mappedBoostId}]";
+                    $xpath = $this->getBoostCssSectionXpath($siteId, $mappedBoostId);
                     $btn = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
                     $this->webDriver->wait(10, 500)->until(
                         WebDriverExpectedCondition::visibilityOf($btn)
                     );
                     $btn->click();
-                    $cssElementBoostMapping = [
-                        'width' => 3,
-                        'height' => 4,
-                        'font-size' => 5
-                    ];
 
                     foreach ($cssElementProperties as $cssElementProperty) {
                         foreach ($cssElementProperty as $cssElementPropertyName => $cssElementPropertyValue) {
-                            $cssBoostId = $cssElementBoostMapping[$cssElementPropertyName];
+                            $cssBoostId = $this->cssElementBoostMapping [$cssElementPropertyName];
                             $xpath = "(//input[@type='number'])[{$cssBoostId}]";
                             $attrValue = $this->webDriver->findElement(WebDriverBy:: xpath($xpath));
                             if (!$attrValue->isDisplayed()) {
@@ -362,17 +346,18 @@ class CssTests extends PHPUnit_Framework_TestCase
         }
     }
 
-   /* public function testCssAttributesAreProductionValues()
+    public function testCssAttributesAreProductionValues()
     {
         $data = Spyc::YAMLLoad('./yaml/site_css_tests.yaml');
         $devData = [];
         foreach ($data['sites'] as $sitesData) {
             $site = $this->getRendererHost($sitesData['host']);
-            $devData[$sitesData['host']
+            $devData[$sitesData['host']] = [];
             $pagesToCheck = $sitesData['pages_to_check'];
             foreach ($pagesToCheck as $pageToCheck) {
                 foreach ($pageToCheck as $pageType => $pages) {
                     foreach ($pages as $page) {
+                        $devData[$sitesData['host']][$pageType][$page] = [];
                         $url = $site . '/' . $page;
                         $this->webDriver->get($url);
                         $cssFamily = $this->pageTypeToCssFamily[$pageType];
@@ -380,9 +365,11 @@ class CssTests extends PHPUnit_Framework_TestCase
                             continue;
                         }
                         $selectors = $this->pageTypeToCssSelector[$pageType];
+                        $devData[$sitesData['host']][$pageType][$page] = [];
                         foreach ($selectors['elements'] as $selectorCssFamily => $selector) {
                             try {
                                 $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                                $devData[$sitesData['host']][$pageType][$page][$selectorCssFamily] = [];
                             } catch (\Exception $e) {
                                 print_r(array($site, $pageType, $selector));
                                 continue;
@@ -390,7 +377,7 @@ class CssTests extends PHPUnit_Framework_TestCase
 
                             $cssDefaultData = Spyc::YAMLLoad('./yaml/default_css_attributes.yaml');
 
-                            foreach ($cssDefaultData['css_attributes'] as $siteDataCssAttributes) {
+                            foreach ($cssDefaultData['css_attributes_families'] as $siteDataCssAttributes) {
                                 foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
                                     if ($cssElement !== $selectorCssFamily) {
                                         continue;
@@ -404,12 +391,7 @@ class CssTests extends PHPUnit_Framework_TestCase
                                                 $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
                                             }
                                             $cssValue = $htmlElement->getCSSValue($cssElementPropertyName);
-                                            try {
-                                                $this->assertEquals($expectedCssElementPropertyValue . 'px', $cssValue);
-                                            } catch (\Exception $e) {
-                                                print_r($expectedCssElementPropertyValue . 'px', $cssValue);
-                                                continue;
-                                            }
+                                            $devData[$sitesData['host']][$pageType][$page][$selectorCssFamily][$cssElementPropertyName] = $cssValue;
                                         }
                                     }
                                 }
@@ -420,8 +402,64 @@ class CssTests extends PHPUnit_Framework_TestCase
                 }
             }
         }
+
+        $prodData = [];
+        foreach ($data['sites'] as $sitesData) {
+            $site = 'http://www.' .$sitesData['host'];
+            $prodData[$sitesData['host']] = [];
+            $pagesToCheck = $sitesData['pages_to_check'];
+            foreach ($pagesToCheck as $pageToCheck) {
+                foreach ($pageToCheck as $pageType => $pages) {
+                    foreach ($pages as $page) {
+                        $prodData[$sitesData['host']][$pageType][$page] = [];
+                        $url = $site . '/' . $page;
+                        $this->webDriver->get($url);
+                        $cssFamily = $this->pageTypeToCssFamily[$pageType];
+                        if (empty($this->pageTypeToCssSelector[$pageType])) {
+                            continue;
+                        }
+                        $selectors = $this->pageTypeToCssSelector[$pageType];
+                        $prodData[$sitesData['host']][$pageType][$page] = [];
+                        foreach ($selectors['elements'] as $selectorCssFamily => $selector) {
+                            try {
+                                $htmlElement = $this->webDriver->findElement(WebDriverBy::cssSelector($selector));
+                                $prodData[$sitesData['host']][$pageType][$page][$selectorCssFamily] = [];
+                            } catch (\Exception $e) {
+                                print_r(array($site, $pageType, $selector));
+                                continue;
+                            }
+
+                            $cssDefaultData = Spyc::YAMLLoad('./yaml/default_css_attributes.yaml');
+
+                            foreach ($cssDefaultData['css_attributes_families'] as $siteDataCssAttributes) {
+                                foreach ($siteDataCssAttributes as $cssElement => $cssElementProperties) {
+                                    if ($cssElement !== $selectorCssFamily) {
+                                        continue;
+                                    }
+                                    foreach ($cssElementProperties as $cssElementProperty) {
+                                        foreach ($cssElementProperty as $cssElementPropertyName => $expectedCssElementPropertyValue) {
+                                            if (strstr($cssElement, 'hvr')) {
+                                                $this->webDriver->getMouse()->mouseMove($htmlElement->getCoordinates());
+                                            } else {
+                                                $link = $this->webDriver->findElement(WebDriverBy::tagName('ul'));
+                                                $this->webDriver->getMouse()->mouseMove($link->getCoordinates());
+                                            }
+                                            $cssValue = $htmlElement->getCSSValue($cssElementPropertyName);
+                                            $prodData[$sitesData['host']][$pageType][$page][$selectorCssFamily][$cssElementPropertyName] = $cssValue;
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+           }
+        print_r(array($prodData, $devData));
+        $this->assertEquals($prodData,$devData);
     }
-*/
+
 
     function waitForUserInput()
     {
@@ -458,6 +496,21 @@ class CssTests extends PHPUnit_Framework_TestCase
         return $this->cssElementUnitsBoostMapping[$cssElementPropertyName];
     }
 
+    public function getBoosHost()
+    {
+        switch ($GLOBALS['ENV']) {
+            case 'staging':
+            case 'qa':
+                return "http://boost.{$GLOBALS['ENV']}.naturalint.com/";
+                break;
+            case 'local':
+            default:
+                return 'http://localhost:3010';
+                break;
+        }
+    }
+
+
     protected function doBoostLogin()
     {
         $boostHost = $this->getBoostHost();
@@ -493,6 +546,31 @@ class CssTests extends PHPUnit_Framework_TestCase
         );
         $confirm->click();
         sleep(2);
+    }
+
+    /**
+     * @param $cssElement
+     * @return mixed
+     */
+    protected function getBoostCssSectionMapping($cssElement)
+    {
+        $mappedBoostId = $this->boostCssSectionMapping[$cssElement];
+        return $mappedBoostId;
+    }
+
+    /**
+     * @param $siteId
+     * @param $mappedBoostId
+     * @return string
+     */
+    protected function getBoostCssSectionXpath($siteId, $mappedBoostId)
+    {
+        if($mappedBoostId === 0){
+            $xpath = "//div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/span/div/form/div/div";
+        } else {
+            $xpath = "//div[@id='theme-settings_{$siteId}']/div/div/div/div/div[2]/div[2]/div/form/style-form/div/style-input[4]/input-group-select/fieldset/div/span/div/form/div/div[{$mappedBoostId}]";
+        }
+        return $xpath;
     }
 
 }

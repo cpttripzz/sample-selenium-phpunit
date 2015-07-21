@@ -14,7 +14,11 @@ sites:
           - lavasoftreview
       - article:
           - lavasoftreview
-    css_attributes:
+    css_attributes_families:
+      - all:
+         -  border-radius: 7
+      - all-hvr:
+         -  border-radius: 8
       - sml:
          -  width: 91
          -  height: 30

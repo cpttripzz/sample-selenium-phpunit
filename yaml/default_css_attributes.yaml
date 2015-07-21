@@ -1,4 +1,8 @@
-css_attributes:
+css_attributes_families:
+    - all:
+       - border-radius: 6
+    - all-hvr:
+       - border-radius: 6
     - sml:
        -  width: 90
        -  height: 30
@@ -8,11 +12,11 @@ css_attributes:
        -  height: 30
        -  font-size: 15
     - med:
-       -  width: 118
+       -  width: 113
        -  height: 40
        -  font-size: 18
     - med-hvr:
-       -  width: 118
+       -  width: 113
        -  height: 40
        -  font-size: 18
     - xlrg:
